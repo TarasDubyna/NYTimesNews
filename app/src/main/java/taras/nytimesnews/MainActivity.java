@@ -2,46 +2,70 @@ package taras.nytimesnews;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
+import taras.nytimesnews.Adapters.TopSelectorRecyclerAdapter;
 import taras.nytimesnews.Models.Article;
-import taras.nytimesnews.Models.Media;
 import taras.nytimesnews.Network.NetworkConnection;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Toolbar toolbar;
+
     private RecyclerView mTopSelectorRecycler;
+    private TopSelectorRecyclerAdapter topSelectorTopSelectorRecyclerAdapter;
+
+    private String selectedSectionName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        NetworkConnection networkConnection = new NetworkConnection.BuildRequestParam()
-                .section("Arts")
-                .mostParam(NetworkConnection.MOST_VIEWED)
-                .timePeriod(1)
-                .build();
+        this.initWidgets();
 
+
+
+
+    }
+
+    private void initWidgets(){
+        toolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setSubtitle("Most viewed");
+
+        mTopSelectorRecycler = (RecyclerView) findViewById(R.id.top_selector_recycler_view);
+        mTopSelectorRecycler.setHasFixedSize(true);
+        mTopSelectorRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        topSelectorTopSelectorRecyclerAdapter = new TopSelectorRecyclerAdapter(this);
+        mTopSelectorRecycler.setAdapter(topSelectorTopSelectorRecyclerAdapter);
+    }
+
+    public void onTopSelectorClickCalled(String value){
+        Toast.makeText(this, "MainActivity: " + value, Toast.LENGTH_SHORT).show();
+        getDataFromInternet(value, 1);
+    }
+
+    public void getDataFromInternet(String section, int timePeriod){
+
+        NetworkConnection networkConnection = new NetworkConnection.BuildRequestParam()
+                .section(section)
+                .mostParam(NetworkConnection.MOST_VIEWED)
+                .timePeriod(timePeriod)
+                .build();
         AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
         asyncHttpClient.get(
                 networkConnection.getRequestUrl(),
@@ -74,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                         articles.add(article);
                                     }
-                                    String text = null;
+                                    Toast.makeText(MainActivity.this, "ArticleList size: " + articles.size(), Toast.LENGTH_SHORT).show();
                                 }
 
                             }
@@ -87,10 +111,5 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println(text);
                     }
                 });
-
-    }
-
-    private void initWidgets(){
-        mTopSelectorRecycler = findViewById(R.id.top_selector_recycler_view);
     }
 }

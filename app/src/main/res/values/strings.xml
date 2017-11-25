@@ -1,3 +1,53 @@
 <resources>
     <string name="app_name">NYTimesNews</string>
+
+
+
+    <string name="all_sections">all-sections</string>
+    <string name="Arts">Arts</string>
+    <string name="Automobiles">Automobiles</string>
+    <string name="Blogs">Blogs</string>
+    <string name="Books">Books</string>
+    <string name="Business_day">Business Day</string>
+    <string name="Education">Education</string>
+    <string name="Fashion_style">Fashion &amp; Style</string>
+    <string name="Food">Food</string>
+    <string name="Health">Health</string>
+    <string name="Job_market">Job Market</string>
+    <string name="Magazine">Magazine</string>
+    <string name="Movies">Movies</string>
+    <string name="Multimedia">Multimedia</string>
+    <string name="NYTNow">NYT Now</string>
+    <string name="Obituaries">Obituaries</string>
+    <string name="Science">Science</string>
+    <string name="Sports">Sports</string>
+    <string name="Style">Style</string>
+    <string name="Theater">Theater</string>
+    <string name="Travel">Travel</string>
+    <string name="World">World</string>
+
+    
+    <string-array name="top_section_array">
+        <item>@string/all_sections</item>
+        <item>@string/Arts</item>
+        <item>@string/Automobiles</item>
+        <item>@string/Blogs</item>
+        <item>@string/Business_day</item>
+        <item>@string/Education</item>
+        <item>@string/Fashion_style</item>
+        <item>@string/Food</item>
+        <item>@string/Health</item>
+        <item>@string/Job_market</item>
+        <item>@string/Magazine</item>
+        <item>@string/Movies</item>
+        <item>@string/Multimedia</item>
+        <item>@string/NYTNow</item>
+        <item>@string/Obituaries</item>
+        <item>@string/Science</item>
+        <item>@string/Sports</item>
+        <item>@string/Style</item>
+        <item>@string/Theater</item>
+        <item>@string/Travel</item>
+        <item>@string/World</item>
+    </string-array>
 </resources>
