@@ -1,10 +1,17 @@
 package taras.nytimesnews;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -14,38 +21,42 @@ import com.google.gson.JsonObject;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
+import taras.nytimesnews.Adapters.ArticleNewsRecyclerAdapter;
 import taras.nytimesnews.Adapters.TopSelectorRecyclerAdapter;
 import taras.nytimesnews.Models.Article;
+import taras.nytimesnews.Models.MediaParam;
 import taras.nytimesnews.Network.NetworkConnection;
 
 public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
+    LinearLayout linearLayout;
 
     private RecyclerView mTopSelectorRecycler;
-    private TopSelectorRecyclerAdapter topSelectorTopSelectorRecyclerAdapter;
 
-    private String selectedSectionName = null;
+    private TopSelectorRecyclerAdapter topSelectorTopSelectorRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         this.initWidgets();
-
-
-
-
     }
 
     private void initWidgets(){
         toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setSubtitle("Most viewed");
+
+        linearLayout = findViewById(R.id.main_layout);
 
         mTopSelectorRecycler = (RecyclerView) findViewById(R.id.top_selector_recycler_view);
         mTopSelectorRecycler.setHasFixedSize(true);
@@ -89,16 +100,17 @@ public class MainActivity extends AppCompatActivity {
                                             article.setAbstracts(object.get("abstract").toString());
                                             article.setColumn(object.get("column").toString());
                                             article.setByline(object.get("byline").toString());
-                                            //article.setCount_type(object.get("count_type").toString());
                                             article.setPublished_date(object.get("published_date").toString());
                                             article.setSection(object.get("section").toString());
                                             article.setSource(object.get("source").toString());
                                         } else {
                                             article = gson.fromJson(object, Article.class);
+                                            MediaParam mediaParam = article.getMedia().get(0).getMediaParam().get(article.getMedia().get(0).getMediaParam().size() - 1);
+                                            article.setBitmapImage(getBitmapFromURL(mediaParam.getUrl()));
                                         }
                                         articles.add(article);
                                     }
-                                    Toast.makeText(MainActivity.this, "ArticleList size: " + articles.size(), Toast.LENGTH_SHORT).show();
+                                    createViewByResponse(articles);
                                 }
 
                             }
@@ -111,5 +123,64 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println(text);
                     }
                 });
+    }
+
+    public static Bitmap getBitmapFromURL(String src) {
+        final Bitmap[] myBitmap = new Bitmap[1];
+        try {
+            final URL url = new URL(src);
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                        connection.setDoInput(true);
+                        connection.connect();
+                        InputStream input = connection.getInputStream();
+                        myBitmap[0] = BitmapFactory.decodeStream(input);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            thread.start();
+            thread.join();
+        } catch (IOException e) {
+            // Log exception
+            return null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return myBitmap[0];
+    }
+
+    private void createViewByResponse(Object value){
+        if (value.getClass().equals(ArrayList.class)){
+            ArrayList<Article> articleList = (ArrayList<Article>) value;
+            value = null;
+            linearLayout.removeAllViews();
+            if (articleList.size() == 0){
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                TextView textView = new TextView(this);
+                textView.setGravity(Gravity.CENTER);
+                textView.setLayoutParams(layoutParams);
+                textView.setText("No articles!");
+                this.linearLayout.addView(textView);
+            } else {
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+
+                RecyclerView recyclerView = new RecyclerView(this);
+                recyclerView.setLayoutParams(layoutParams);
+                recyclerView.setLayoutManager(layoutManager);
+                //recyclerView.setHasFixedSize(true);
+
+                ArticleNewsRecyclerAdapter adapter = new ArticleNewsRecyclerAdapter(this, articleList);
+                recyclerView.setAdapter(adapter);
+                this.linearLayout.addView(recyclerView);
+            }
+        } else {
+        }
+
     }
 }

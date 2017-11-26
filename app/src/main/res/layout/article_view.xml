@@ -2,29 +2,92 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/article_"
-        android:layout_margin="20dp"
+        android:id="@+id/article_card_view"
         android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="5dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
         card_view:cardCornerRadius="5dp"
-        card_view:contentPadding="10dp"
         card_view:cardElevation="5dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
             <TextView
-                android:id="@+id/top_selector_recycler_item_text"
-                android:gravity="center"
-                android:text="sdfsdfasdfadsfadf"
+                android:id="@+id/article_title_text"
+                android:gravity="center_horizontal"
+                android:text="Title"
+                android:fontFamily="@font/old_london_alternate"
+                android:textColor="@color/black"
+                android:textSize="30sp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/article_abstract_text"
+                android:text="Abstract"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:id="@+id/article_image_caption_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical">
+                <ImageView
+                    android:id="@+id/article_image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"/>
+                <TextView
+                    android:id="@+id/article_caption_text"
+                    android:text="sfsdfsdfsdf"
+                    android:gravity="center_horizontal"
+                    android:textSize="10sp"
+                    android:textColor="@color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/article_byline_text"
+                    android:gravity="start"
+                    android:text="byline"
+                    android:textColor="@color/black"
+                    android:layout_margin="3dp"
+                    android:layout_weight="3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+                <TextView
+                    android:id="@+id/article_published_date_text"
+                    android:gravity="end"
+                    android:text="byline"
+                    android:textColor="@color/black"
+                    android:layout_margin="3dp"
+                    android:layout_width="80dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+            <Button
+                android:text="more"
+                android:background="@color/black"
+                android:textColor="@color/white"
+                android:id="@+id/article_more_btn"
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </LinearLayout>

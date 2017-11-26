@@ -52,10 +52,10 @@ public class Media {
         this.copyright = copyright;
     }
 
-    public List<MediaParam> getMedia() {
+    public List<MediaParam> getMediaParam() {
         return mediaParam;
     }
-    public void setMedia(List<MediaParam> mediaParam) {
+    public void setMediaParam(List<MediaParam> mediaParam) {
         this.mediaParam = mediaParam;
     }
 }

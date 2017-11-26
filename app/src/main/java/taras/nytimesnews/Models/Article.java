@@ -1,6 +1,7 @@
 package taras.nytimesnews.Models;
 
 
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
@@ -42,6 +43,15 @@ public class Article {
     @SerializedName("media")
     @Expose
     private List<Media> media = new ArrayList<Media>();
+
+    private Bitmap bitmapImage;
+
+    public Bitmap getBitmapImage() {
+        return bitmapImage;
+    }
+    public void setBitmapImage(Bitmap bitmapImage) {
+        this.bitmapImage = bitmapImage;
+    }
 
     public String getUrl() {
         return url;
