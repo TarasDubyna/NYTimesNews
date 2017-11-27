@@ -2,7 +2,7 @@
     <string name="app_name">NYTimesNews</string>
 
 
-
+    <string name="Favorite">Favorite</string>
     <string name="all_sections">all-sections</string>
     <string name="Arts">Arts</string>
     <string name="Automobiles">Automobiles</string>
@@ -28,6 +28,7 @@
 
     
     <string-array name="top_section_array">
+        <item>@string/Favorite</item>
         <item>@string/all_sections</item>
         <item>@string/Arts</item>
         <item>@string/Automobiles</item>

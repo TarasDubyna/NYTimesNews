@@ -2,6 +2,7 @@ package taras.nytimesnews;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,6 +74,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getDataFromInternet(String section, int timePeriod){
+
+        linearLayout.removeAllViews();
+        ProgressBar progressBar = new ProgressBar(this);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
+        layoutParams.gravity = Gravity.CENTER;
+        progressBar.setIndeterminate(true);
+        progressBar.getIndeterminateDrawable().setColorFilter(this.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setLayoutParams(layoutParams);
+        LinearLayout progressBarLayout = new LinearLayout(this);
+        progressBarLayout.setGravity(Gravity.CENTER);
+        progressBarLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        progressBarLayout.addView(progressBar);
+        linearLayout.addView(progressBarLayout);
 
         NetworkConnection networkConnection = new NetworkConnection.BuildRequestParam()
                 .section(section)
@@ -158,25 +175,23 @@ public class MainActivity extends AppCompatActivity {
         if (value.getClass().equals(ArrayList.class)){
             ArrayList<Article> articleList = (ArrayList<Article>) value;
             value = null;
-            linearLayout.removeAllViews();
             if (articleList.size() == 0){
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 TextView textView = new TextView(this);
                 textView.setGravity(Gravity.CENTER);
                 textView.setLayoutParams(layoutParams);
                 textView.setText("No articles!");
+                linearLayout.removeAllViews();
                 this.linearLayout.addView(textView);
             } else {
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-
                 RecyclerView recyclerView = new RecyclerView(this);
                 recyclerView.setLayoutParams(layoutParams);
                 recyclerView.setLayoutManager(layoutManager);
-                //recyclerView.setHasFixedSize(true);
-
                 ArticleNewsRecyclerAdapter adapter = new ArticleNewsRecyclerAdapter(this, articleList);
                 recyclerView.setAdapter(adapter);
+                linearLayout.removeAllViews();
                 this.linearLayout.addView(recyclerView);
             }
         } else {

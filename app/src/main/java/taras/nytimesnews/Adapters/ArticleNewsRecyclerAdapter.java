@@ -1,8 +1,6 @@
 package taras.nytimesnews.Adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,21 +10,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.List;
 
 import taras.nytimesnews.Models.Article;
-import taras.nytimesnews.Models.Media;
-import taras.nytimesnews.Models.MediaParam;
 import taras.nytimesnews.R;
 
 public class ArticleNewsRecyclerAdapter extends RecyclerView.Adapter<ArticleNewsRecyclerAdapter.ViewHolder>{
@@ -104,7 +90,7 @@ public class ArticleNewsRecyclerAdapter extends RecyclerView.Adapter<ArticleNews
 
     private void createImageCaptionView(ViewHolder holder, Article article){
         if (article.getMedia().size() > 0 && article.getBitmapImage() != null){
-            if (article.getMedia().get(0).getCaption().isEmpty()){
+            if (article.getMedia().get(0).getCaption() == null){
                 holder.mCaptionText.setVisibility(View.GONE);
             } else {
                 holder.mCaptionText.setText(article.getMedia().get(0).getCaption());
