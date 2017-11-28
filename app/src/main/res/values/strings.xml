@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">NYTimesNews</string>
 
-
-    <string name="Favorite">Favorite</string>
     <string name="all_sections">all-sections</string>
     <string name="Arts">Arts</string>
     <string name="Automobiles">Automobiles</string>
@@ -26,9 +24,8 @@
     <string name="Travel">Travel</string>
     <string name="World">World</string>
 
-    
+
     <string-array name="top_section_array">
-        <item>@string/Favorite</item>
         <item>@string/all_sections</item>
         <item>@string/Arts</item>
         <item>@string/Automobiles</item>
@@ -51,4 +48,19 @@
         <item>@string/Travel</item>
         <item>@string/World</item>
     </string-array>
+
+    <string name="title_activity_main2">MainActivity2</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+
+
+    <string name="favorite">Favorite</string>
+    <string name="most_popular">Most popular</string>
+    <string name="search">Article Search</string>
+
+    <string name="mostemailed">Most emailed</string>
+    <string name="mostshared">Most shared</string>
+    <string name="mostviewed">Most viewed</string>
 </resources>

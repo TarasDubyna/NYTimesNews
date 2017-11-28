@@ -1,14 +1,31 @@
 package taras.nytimesnews.Network;
 
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.ResponseHandlerInterface;
+import com.loopj.android.http.TextHttpResponseHandler;
 
-public class NetworkConnection {
+import java.util.ArrayList;
 
-    // url example https://api.nytimes.com/svc/mostpopular/v2/   mostemailed/Arts/1.json?api-key=2586ad6dfc1e4956bf10a11517bd878d
-    public final static String NYTIMES_URL = "https://api.nytimes.com/svc/mostpopular/v2/";
-    public final static String MY_API_KEY = "2586ad6dfc1e4956bf10a11517bd878d";
+import cz.msebera.android.httpclient.Header;
+import taras.nytimesnews.Models.Article;
+import taras.nytimesnews.Models.MediaParam;
+
+public class NetworkConnection extends AsyncHttpClient{
+
+    // url example https://api.nytimes.com/svc/  mostpopular/v2/   mostemailed/ Arts/ 1.json?api-key=2586ad6dfc1e4956bf10a11517bd878d
+    public final static String NYTIMES_URL = "https://api.nytimes.com/svc/";
+
+    public final static String API_KEY = "2586ad6dfc1e4956bf10a11517bd878d";
+
+    public final static String TYPE_REQUEST = "type_request";
+    public final static String MOST_POPULAR_TYPE = "most_popular_type";
 
     public final static String MOST_MAILED = "mostemailed/";
     public final static String MOST_SHARED = "mostshared/";
@@ -19,58 +36,77 @@ public class NetworkConnection {
 
     private String request_url = null;
 
-    private String mostParam = MOST_MAILED;
+
+    private String typeRequest = "mostpopular/v2/";
+
+    private String mostPopularType = MOST_MAILED;
     private String section = "Arts";
     private int timePeriod = 1;
 
-
-    NetworkConnection networkConnection;
-
-    public NetworkConnection() {
-        networkConnection = new NetworkConnection();
-    }
+    private int year = 0;
+    private int month = 0;
 
     private NetworkConnection(BuildRequestParam builder){
-        section = builder.section;
-        timePeriod = builder.timePeriod;
-        mostParam = builder.mostParam;
-        request_url = NYTIMES_URL + mostParam + section + "/" + timePeriod + ".json";
+        request_url = builder.request_url;
     }
+
+
+    public RequestHandle createRequest(ResponseHandlerInterface responseHandler) {
+        return super.get(request_url, getRequestApiKey(), responseHandler);
+    }
+
     public static class BuildRequestParam{
-        private String mostParam = null;
+        private String request_url = null;
+
+        private String typeRequest = null;
+
+        //mostpopular param
+        private String mostPopularType = null;
         private String section = null;
         private int timePeriod = 0;
 
-        public BuildRequestParam mostParam(String value){
-            mostParam = value;
+        //archive param
+        private int year = 0;
+        private int month = 0;
+
+        public BuildRequestParam typeRequest(String value){
+            typeRequest = value;
             return this;
         }
-
-        public BuildRequestParam section (String value){
-            section = value;
+        public BuildRequestParam mostPopularParams(String mostPopularType, String section, int timePeriod){
+            this.mostPopularType = mostPopularType;
+            this.section = section;
+            this.timePeriod = timePeriod;
             return this;
         }
-
-        public BuildRequestParam timePeriod (int value){
-            timePeriod = value;
+        public BuildRequestParam archiveParams(int year, int month){
+            this.year = year;
+            this.month = month;
             return this;
         }
-
-        public NetworkConnection build(){
+        public NetworkConnection createUrl(){
+            switch (typeRequest){
+                case "mostpopular":
+                    this.request_url = NYTIMES_URL + "mostpopular/v2/" + mostPopularType + "/" + section + "/" + timePeriod + ".json";
+                    break;
+                case "archive":
+                    this.request_url = NYTIMES_URL + "archive/v1/" + year + "/" + month + ".json";
+                    break;
+            }
             return new NetworkConnection(this);
         }
-
     }
 
-
-    public RequestParams getRequestApiKey(){
+    private RequestParams getRequestApiKey(){
         RequestParams requestParams = new RequestParams();
-        requestParams.put("api-key", MY_API_KEY);
+        requestParams.put("api-key", API_KEY);
         return requestParams;
     }
+
     public String getRequestUrl(){
         return request_url;
     }
+
 
 
 

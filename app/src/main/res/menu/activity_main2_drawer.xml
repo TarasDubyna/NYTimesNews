@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:checkableBehavior="single">
+
+        <item
+            android:icon="@drawable/star_icon"
+            android:id="@+id/nav_favorite"
+            android:title="@string/favorite" />
+
+        <item
+            android:id="@+id/nav_mostviewed"
+            android:icon="@drawable/most_viewed"
+            android:title="@string/mostviewed" />
+
+
+        <item
+            android:id="@+id/nav_mostmailed"
+            android:icon="@drawable/most_mailed"
+            android:title="@string/mostemailed" />
+
+        <item
+            android:id="@+id/nav_most_shared"
+            android:icon="@drawable/most_shared"
+            android:title="@string/mostshared" />
+
+        <item
+            android:id="@+id/nav_search"
+            android:icon="@drawable/search"
+            android:title="@string/search" />
+
+
+
+    </group>
+</menu>

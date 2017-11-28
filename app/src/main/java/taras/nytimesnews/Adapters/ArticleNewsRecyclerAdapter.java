@@ -60,10 +60,13 @@ public class ArticleNewsRecyclerAdapter extends RecyclerView.Adapter<ArticleNews
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         if (position == 0){
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            layoutParams.setMargins(20,100, 20, 20);
+            layoutParams.setMargins(20,20, 20, 20);
+            holder.mCardView.setLayoutParams(layoutParams);
+        } else {
+            layoutParams.setMargins(20,20, 20, 20);
             holder.mCardView.setLayoutParams(layoutParams);
         }
         holder.mTitleText.setText(articles.get(position).getTitle());
