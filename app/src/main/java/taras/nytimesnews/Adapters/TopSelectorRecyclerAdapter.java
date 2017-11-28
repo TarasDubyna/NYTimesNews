@@ -11,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import taras.nytimesnews.MainActivity;
-import taras.nytimesnews.MainActivity2;
 import taras.nytimesnews.R;
 
 public class TopSelectorRecyclerAdapter extends RecyclerView.Adapter<TopSelectorRecyclerAdapter.ViewHolder>{
@@ -49,7 +48,7 @@ public class TopSelectorRecyclerAdapter extends RecyclerView.Adapter<TopSelector
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         if (selectedPosition == -1){
             selectedPosition = 0;
-            ((MainActivity2) holder.mCardView.getContext()).onTopSelectorClickCalled(mSelectorTextArray[selectedPosition]);
+            ((MainActivity) holder.mCardView.getContext()).onTopSelectorClickCalled(mSelectorTextArray[selectedPosition]);
         }
 
         if (selectedPosition == position){
@@ -69,7 +68,7 @@ public class TopSelectorRecyclerAdapter extends RecyclerView.Adapter<TopSelector
                     Toast.makeText(mContext, "Favorite articles", Toast.LENGTH_SHORT).show();
                     notifyDataSetChanged();
                 } else {
-                    ((MainActivity2) view.getContext()).onTopSelectorClickCalled(mSelectorTextArray[selectedPosition]);
+                    ((MainActivity) view.getContext()).onTopSelectorClickCalled(mSelectorTextArray[selectedPosition]);
                     notifyDataSetChanged();
                 }
             }
