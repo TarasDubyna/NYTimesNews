@@ -31,6 +31,10 @@ public class NetworkConnection extends AsyncHttpClient{
     public final static String MOST_SHARED = "mostshared/";
     public final static String MOST_VIEWED = "mostviewed/";
 
+    public final static String MOST_POPULAR_REQUEST = "mostpopular/v2/";
+    public final static String SEARCH_REQUEST = "";
+    public final static String ARCHIVE_REQUEST = "archive/v1/";
+
     public final static String SECTION = "section";
     public final static String TIME_PERIOD = "time-period";
 
@@ -74,6 +78,7 @@ public class NetworkConnection extends AsyncHttpClient{
             return this;
         }
         public BuildRequestParam mostPopularParams(String mostPopularType, String section, int timePeriod){
+            this.typeRequest = MOST_POPULAR_REQUEST;
             this.mostPopularType = mostPopularType;
             this.section = section;
             this.timePeriod = timePeriod;
@@ -86,11 +91,11 @@ public class NetworkConnection extends AsyncHttpClient{
         }
         public NetworkConnection createUrl(){
             switch (typeRequest){
-                case "mostpopular":
-                    this.request_url = NYTIMES_URL + "mostpopular/v2/" + mostPopularType + "/" + section + "/" + timePeriod + ".json";
+                case MOST_POPULAR_REQUEST:
+                    this.request_url = NYTIMES_URL + typeRequest + mostPopularType + section + "/" + timePeriod + ".json";
                     break;
-                case "archive":
-                    this.request_url = NYTIMES_URL + "archive/v1/" + year + "/" + month + ".json";
+                case ARCHIVE_REQUEST:
+                    this.request_url = NYTIMES_URL + typeRequest + year + "/" + month + ".json";
                     break;
             }
             return new NetworkConnection(this);
@@ -102,12 +107,4 @@ public class NetworkConnection extends AsyncHttpClient{
         requestParams.put("api-key", API_KEY);
         return requestParams;
     }
-
-    public String getRequestUrl(){
-        return request_url;
-    }
-
-
-
-
 }

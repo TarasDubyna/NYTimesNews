@@ -49,6 +49,8 @@
         <item>@string/World</item>
     </string-array>
 
+    <string name="time_period_text">Time period: </string>
+
     <string name="title_activity_main2">MainActivity2</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -59,8 +61,11 @@
     <string name="favorite">Favorite</string>
     <string name="most_popular">Most popular</string>
     <string name="search">Article Search</string>
+    <string name="archive">Archive</string>
 
     <string name="mostemailed">Most emailed</string>
     <string name="mostshared">Most shared</string>
     <string name="mostviewed">Most viewed</string>
+
+    <string name="no_articles">No articles!</string>
 </resources>

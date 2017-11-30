@@ -9,12 +9,17 @@
 
         <item name="android:textColorSecondary">@color/white</item>
 
+        <item name="android:actionOverflowButtonStyle">@style/MyActionButtonOverflow</item>
+
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="MyActionButtonOverflow" parent="android:style/Widget.Holo.Light.ActionButton.Overflow">
+        <item name="android:src">@android:drawable/ic_lock_idle_alarm</item>
+    </style>
 
 </resources>

@@ -64,13 +64,8 @@ public class TopSelectorRecyclerAdapter extends RecyclerView.Adapter<TopSelector
             @Override
             public void onClick(View view) {
                 selectedPosition = position;
-                if (position == 0){
-                    Toast.makeText(mContext, "Favorite articles", Toast.LENGTH_SHORT).show();
-                    notifyDataSetChanged();
-                } else {
-                    ((MainActivity) view.getContext()).onTopSelectorClickCalled(mSelectorTextArray[selectedPosition]);
-                    notifyDataSetChanged();
-                }
+                ((MainActivity) view.getContext()).onTopSelectorClickCalled(mSelectorTextArray[selectedPosition]);
+                notifyDataSetChanged();
             }
         });
     }

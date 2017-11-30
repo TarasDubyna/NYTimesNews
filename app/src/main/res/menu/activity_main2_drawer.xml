@@ -16,7 +16,6 @@
             android:icon="@drawable/most_viewed"
             android:title="@string/mostviewed" />
 
-
         <item
             android:id="@+id/nav_mostmailed"
             android:icon="@drawable/most_mailed"
@@ -32,7 +31,10 @@
             android:icon="@drawable/search"
             android:title="@string/search" />
 
-
+        <item
+            android:id="@+id/nav_archive"
+            android:icon="@drawable/archive"
+            android:title="@string/archive"/>
 
     </group>
 </menu>

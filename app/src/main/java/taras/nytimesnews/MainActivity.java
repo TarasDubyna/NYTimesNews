@@ -2,26 +2,22 @@ package taras.nytimesnews;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,6 +26,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.loopj.android.http.TextHttpResponseHandler;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,28 +45,46 @@ import taras.nytimesnews.Network.NetworkConnection;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private Toolbar toolbar;
-    LinearLayout linearLayoutContent;
-    LinearLayout linearLayoutRecyclerView;
-    LinearLayout progressBarLayout;
+    LayoutWorkplaceManager layoutWorkplaceManager;
 
+    Toolbar toolbar;
 
-    private RecyclerView mTopSelectorRecycler;
-    private RecyclerView mArticleRecycler;
-    private TopSelectorRecyclerAdapter topSelectorTopSelectorRecyclerAdapter;
+    String typeRequest = "mostpopular/v2/";
+    String section = "mostviewed";
+    int timePeriod = 1;
+    int idCheckedNavMenu = 1;
+
+    TextView toolbarTitleTextView;
+    TextView toolbarSupportTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_main);
 
-        this.initWidgets();
+        this.initNavigationDrawer();
+        this.initWorkplaceLayout();
     }
 
-    private void initWidgets(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+    private void initWorkplaceLayout(){
+        layoutWorkplaceManager = new LayoutWorkplaceManager
+                .WorkplaceBuilder(this)
+                .contentLayout((LinearLayout) findViewById(R.id.main_content_layout))
+                .supportLayout((LinearLayout) findViewById(R.id.main_support_layout))
+                .build();
+
+        layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW);
+    }
+    private void initNavigationDrawer(){
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setSubtitle("Most viewed");
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        toolbarTitleTextView = findViewById(R.id.toolbar_title_text);
+        toolbarSupportTextView = findViewById(R.id.toolbar_support_text);
+        toolbarTitleTextView.setText(R.string.mostviewed);
+        String text = getResources().getString(R.string.time_period_text) + " " + timePeriod + " day";
+        toolbarSupportTextView.setText(text);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -78,43 +94,18 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        linearLayoutContent = findViewById(R.id.main_content_layout);
-        linearLayoutRecyclerView = new LinearLayout(this);
-        linearLayoutRecyclerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        mTopSelectorRecycler = new RecyclerView(this);
-        TopSelectorRecyclerAdapter topSelectorRecyclerAdapter = new TopSelectorRecyclerAdapter(this);
-        mTopSelectorRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        mTopSelectorRecycler.setAdapter(topSelectorRecyclerAdapter);
-        mTopSelectorRecycler.setBackgroundColor(getResources().getColor(R.color.grey));
-        this.linearLayoutContent.addView(mTopSelectorRecycler);
-        this.linearLayoutContent.addView(linearLayoutRecyclerView);
+        navigationView.getMenu().getItem(1).setChecked(true);
     }
 
     public void onTopSelectorClickCalled(String value){
-        getDataFromInternet(value, 1);
+        getDataFromInternet(typeRequest, value, timePeriod);
     }
 
-    public void getDataFromInternet(String section, int timePeriod){
-
-        linearLayoutRecyclerView.removeAllViews();
-        ProgressBar progressBar = new ProgressBar(this);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
-        layoutParams.gravity = Gravity.CENTER;
-        progressBar.setIndeterminate(true);
-        progressBar.getIndeterminateDrawable().setColorFilter(this.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
-        progressBar.setVisibility(View.VISIBLE);
-        progressBar.setLayoutParams(layoutParams);
-        progressBarLayout = new LinearLayout(this);
-        progressBarLayout.setGravity(Gravity.CENTER);
-        progressBarLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        progressBarLayout.addView(progressBar);
-        linearLayoutRecyclerView.addView(progressBarLayout);
-
+    public void getDataFromInternet(String typeRequest, String section, int timePeriod){
+        layoutWorkplaceManager.createView(LayoutWorkplaceManager.CONTENT, LayoutWorkplaceManager.PROGRESS_VIEW);
         NetworkConnection networkConnection = new NetworkConnection.BuildRequestParam()
-                .typeRequest("mostpopular")
-                .mostPopularParams("mostemailed", section, timePeriod)
+                .typeRequest(typeRequest)
+                .mostPopularParams(NetworkConnection.MOST_MAILED, section, timePeriod)
                 .createUrl();
         networkConnection.createRequest(new TextHttpResponseHandler() {
             @Override
@@ -148,6 +139,8 @@ public class MainActivity extends AppCompatActivity
                             createViewByResponse(articles);
                         }
                     }
+                } else {
+                    System.out.println("response == null");
                 }
             }
 
@@ -192,23 +185,13 @@ public class MainActivity extends AppCompatActivity
         if (value.getClass().equals(ArrayList.class)){
             ArrayList<Article> articleList = (ArrayList<Article>) value;
             value = null;
-            linearLayoutRecyclerView.removeView(progressBarLayout);
             if (articleList.size() == 0){
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                TextView textView = new TextView(this);
-                textView.setGravity(Gravity.CENTER);
-                textView.setLayoutParams(layoutParams);
-                textView.setText("No articles!");
-                this.linearLayoutRecyclerView.addView(textView);
+                layoutWorkplaceManager.addStringResource(R.string.no_articles)
+                        .createView(LayoutWorkplaceManager.CONTENT, LayoutWorkplaceManager.ERROR_VIEW);
+
             } else {
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-                mArticleRecycler = new RecyclerView(this);
-                ArticleNewsRecyclerAdapter adapter = new ArticleNewsRecyclerAdapter(this, articleList);
-                mArticleRecycler.setLayoutManager(layoutManager);
-                mArticleRecycler.setLayoutParams(layoutParams);
-                mArticleRecycler.setAdapter(adapter);
-                this.linearLayoutRecyclerView.addView(mArticleRecycler);
+                layoutWorkplaceManager.addArticleArrayList(articleList)
+                        .createView(LayoutWorkplaceManager.CONTENT, LayoutWorkplaceManager.ARTICLE_RECYCLER_VIEW);
             }
         } else {
         }
@@ -225,15 +208,72 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_time_period, menu);
+        menu.getItem(0).setChecked(true);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        String text = null;
+        switch (id){
+            case R.id.time_period_1:
+                timePeriod = 1;
+                text = getResources().getString(R.string.time_period_text) + " " + timePeriod + " day";
+                break;
+            case R.id.time_period_7:
+                timePeriod = 7;
+                text = getResources().getString(R.string.time_period_text) + " " + timePeriod + " days";
+                break;
+            case R.id.time_period_30:
+                timePeriod = 30;
+                text = getResources().getString(R.string.time_period_text) + " " + timePeriod + " days";
+                break;
+        }
+        toolbarSupportTextView.setText(text);
+        getDataFromInternet(typeRequest, section, timePeriod);
+        return super.onOptionsItemSelected(item);
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        if (idCheckedNavMenu != id){
+            switch (id){
+                case R.id.nav_favorite:
+                    break;
+                case R.id.nav_mostviewed:
+                    toolbarTitleTextView.setText(R.string.mostviewed);
+                    typeRequest = NetworkConnection.MOST_POPULAR_REQUEST;
+                    section = NetworkConnection.MOST_VIEWED;
+                    getDataFromInternet(typeRequest, section , 1);
+                    break;
+                case R.id.nav_mostmailed:
+                    toolbarTitleTextView.setText(R.string.mostemailed);
+                    typeRequest = NetworkConnection.MOST_POPULAR_REQUEST;
+                    section = NetworkConnection.MOST_MAILED;
+                    getDataFromInternet(typeRequest, section , 1);
+                    break;
+                case R.id.nav_most_shared:
+                    toolbarTitleTextView.setText(R.string.mostshared);
+                    typeRequest = NetworkConnection.MOST_POPULAR_REQUEST;
+                    section = NetworkConnection.MOST_SHARED;
+                    getDataFromInternet(typeRequest, section , 1);
+                    break;
+                case R.id.nav_search:
+                    break;
+                case R.id.nav_archive:
+                    break;
+            }
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        }
         return true;
     }
 }

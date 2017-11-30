@@ -63,7 +63,7 @@ public class ArticleNewsRecyclerAdapter extends RecyclerView.Adapter<ArticleNews
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         if (position == 0){
-            layoutParams.setMargins(20,20, 20, 20);
+            layoutParams.setMargins(20,100, 20, 20);
             holder.mCardView.setLayoutParams(layoutParams);
         } else {
             layoutParams.setMargins(20,20, 20, 20);
