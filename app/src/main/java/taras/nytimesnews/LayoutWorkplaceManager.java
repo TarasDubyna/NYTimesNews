@@ -1,18 +1,24 @@
 package taras.nytimesnews;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -38,6 +44,7 @@ public class LayoutWorkplaceManager {
     private int resource = 0;
     private ArrayList<Article> articles;
     private int timePeriod = 1;
+    private String searchValue = null;
 
 
 
@@ -106,10 +113,38 @@ public class LayoutWorkplaceManager {
                 addViewInLayout(layoutName, view);
                 break;
             case SEARCH_ARTICLE_VIEW:
+                view = new CardView(mContext);
+                LinearLayout.LayoutParams searchLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPixels(mContext, 40));
+                searchLayoutParams.setMargins(dipToPixels(mContext, 5),dipToPixels(mContext, 5),dipToPixels(mContext, 5),dipToPixels(mContext, 5));
+                view.setLayoutParams(searchLayoutParams);
+
+                LinearLayout viewCardLayout = new LinearLayout(mContext);
+                viewCardLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                SearchView searchView = new SearchView(mContext, null, R.style.SearchViewStyle1);
+                LinearLayout.LayoutParams inputSearchParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dipToPixels(mContext, 40));
+                searchView.setLayoutParams(inputSearchParam);
+                searchView.setIconified(false);
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        Toast.makeText(mContext, "TextSubmit", Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        return false;
+                    }
+                });
+
+                viewCardLayout.addView(searchView);
+                ((CardView) view).addView(viewCardLayout);
+                addViewInLayout(layoutName, view);
                 break;
             case PROGRESS_VIEW:
                 ProgressBar progressBar = new ProgressBar(mContext);
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(dipToPixels(mContext, 50), dipToPixels(mContext, 50));
                 layoutParams.gravity = Gravity.CENTER;
                 progressBar.setIndeterminate(true);
                 progressBar.getIndeterminateDrawable().setColorFilter(mContext.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
@@ -143,6 +178,11 @@ public class LayoutWorkplaceManager {
                 supportLayout.addView(view);
                 break;
         }
+    }
+
+    public static int dipToPixels(Context context, float dipValue) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
     }
 
 }

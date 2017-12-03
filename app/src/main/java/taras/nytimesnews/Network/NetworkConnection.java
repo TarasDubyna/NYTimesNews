@@ -32,7 +32,7 @@ public class NetworkConnection extends AsyncHttpClient{
     public final static String MOST_VIEWED = "mostviewed/";
 
     public final static String MOST_POPULAR_REQUEST = "mostpopular/v2/";
-    public final static String SEARCH_REQUEST = "";
+    public final static String SEARCH_REQUEST = "search/v2/";
     public final static String ARCHIVE_REQUEST = "archive/v1/";
 
     public final static String SECTION = "section";
@@ -42,7 +42,6 @@ public class NetworkConnection extends AsyncHttpClient{
 
 
     private String typeRequest = "mostpopular/v2/";
-
     private String mostPopularType = MOST_MAILED;
     private String section = "Arts";
     private int timePeriod = 1;
@@ -97,6 +96,8 @@ public class NetworkConnection extends AsyncHttpClient{
                 case ARCHIVE_REQUEST:
                     this.request_url = NYTIMES_URL + typeRequest + year + "/" + month + ".json";
                     break;
+                case SEARCH_REQUEST:
+                    this.request_url = NYTIMES_URL + ARCHIVE_REQUEST
             }
             return new NetworkConnection(this);
         }

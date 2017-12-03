@@ -267,6 +267,11 @@ public class MainActivity extends AppCompatActivity
                     getDataFromInternet(typeRequest, section , 1);
                     break;
                 case R.id.nav_search:
+                    toolbarTitleTextView.setText(R.string.search);
+                    typeRequest = NetworkConnection.SEARCH_REQUEST;
+                    layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.SEARCH_ARTICLE_VIEW);
+                    toolbar.getMenu().clear();
+                    //getDataFromInternet(typeRequest, section , 1);
                     break;
                 case R.id.nav_archive:
                     break;
