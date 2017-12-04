@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.w3c.dom.Text;
@@ -274,6 +275,10 @@ public class MainActivity extends AppCompatActivity
                     //getDataFromInternet(typeRequest, section , 1);
                     break;
                 case R.id.nav_archive:
+                    toolbarTitleTextView.setText(R.string.search);
+                    typeRequest = NetworkConnection.ARCHIVE_REQUEST;
+                    layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.ARCHIVE_ARTICLE_VIEW);
+                    toolbar.getMenu().clear();
                     break;
             }
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

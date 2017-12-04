@@ -97,10 +97,33 @@ public class NetworkConnection extends AsyncHttpClient{
                     this.request_url = NYTIMES_URL + typeRequest + year + "/" + month + ".json";
                     break;
                 case SEARCH_REQUEST:
-                    this.request_url = NYTIMES_URL + ARCHIVE_REQUEST
+                    this.request_url = NYTIMES_URL + ARCHIVE_REQUEST;
+                    break;
             }
             return new NetworkConnection(this);
         }
+    }
+
+    private RequestParams getRequestParamsMostPopular(){
+     RequestParams requestParams = new RequestParams();
+     requestParams.put("api-key", API_KEY);
+     return requestParams;
+    }
+
+
+    private RequestParams getRequestParamsSearch(){
+        RequestParams requestParams = new RequestParams();
+
+        /*
+        requestParams.put("api-key", API_KEY);
+        requestParams.put(NY_BEGIN_DATE, FilterAttributes.beginDate);
+        requestParams.put(NY_NEWS_DESK, newsDeskBuilder.toString());
+        requestParams.put(NY_SORT_ORDER, FilterAttributes.sortOrder.getSortOrder());
+        requestParams.put(PAGE, pageNumber);
+        requestParams.put(QUERY, searchText);*/
+
+
+        return requestParams;
     }
 
     private RequestParams getRequestApiKey(){

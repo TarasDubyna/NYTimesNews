@@ -36,6 +36,8 @@ public class LayoutWorkplaceManager {
     public static final String TOP_SELECTOR_RECYCLER_VIEW = "top_selector_recycler";
     public static final String ARTICLE_RECYCLER_VIEW = "article_selector_recycler";
     public static final String SEARCH_ARTICLE_VIEW = "search_article";
+    public static final String ARCHIVE_ARTICLE_VIEW = "archive_article";
+
 
     private Context mContext;
     private LinearLayout contentLayout;
@@ -141,6 +143,22 @@ public class LayoutWorkplaceManager {
                 viewCardLayout.addView(searchView);
                 ((CardView) view).addView(viewCardLayout);
                 addViewInLayout(layoutName, view);
+                break;
+            case ARCHIVE_ARTICLE_VIEW:
+                view = new CardView(mContext);
+                LinearLayout.LayoutParams archiveViewParams = new LinearLayout.LayoutParams(dipToPixels(mContext, 160),dipToPixels(mContext, 40));
+                archiveViewParams.gravity = Gravity.CENTER_HORIZONTAL;
+                view.setLayoutParams(archiveViewParams);
+
+                LinearLayout archiveContent = new LinearLayout(mContext);
+                archiveContent.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                TextView dateText = new TextView(mContext);
+                dateText.setText("25 Oct 2017");
+                dateText.setGravity(Gravity.CENTER);
+
+                archiveContent.addView(dateText);
+                ((CardView) view).addView(archiveContent);
                 break;
             case PROGRESS_VIEW:
                 ProgressBar progressBar = new ProgressBar(mContext);
