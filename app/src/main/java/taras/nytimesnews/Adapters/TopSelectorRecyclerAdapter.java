@@ -48,7 +48,7 @@ public class TopSelectorRecyclerAdapter extends RecyclerView.Adapter<TopSelector
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         if (selectedPosition == -1){
             selectedPosition = 0;
-            ((MainActivity) holder.mCardView.getContext()).onTopSelectorClickCalled(mSelectorTextArray[selectedPosition]);
+            ((MainActivity) holder.mCardView.getContext()).onTopSelectorMostPopularCalled(mSelectorTextArray[selectedPosition]);
         }
 
         if (selectedPosition == position){
@@ -63,9 +63,11 @@ public class TopSelectorRecyclerAdapter extends RecyclerView.Adapter<TopSelector
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectedPosition = position;
-                ((MainActivity) view.getContext()).onTopSelectorClickCalled(mSelectorTextArray[selectedPosition]);
-                notifyDataSetChanged();
+                if (position != selectedPosition){
+                    selectedPosition = position;
+                    ((MainActivity) view.getContext()).onTopSelectorMostPopularCalled(mSelectorTextArray[selectedPosition]);
+                    notifyDataSetChanged();
+                }
             }
         });
     }

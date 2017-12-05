@@ -31,10 +31,11 @@
             android:icon="@drawable/search"
             android:title="@string/article_search" />
 
+        <!--
         <item
             android:id="@+id/nav_archive"
             android:icon="@drawable/archive"
-            android:title="@string/archive"/>
+            android:title="@string/archive"/> -->
 
     </group>
 </menu>

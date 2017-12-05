@@ -24,6 +24,19 @@
     <string name="Travel">Travel</string>
     <string name="World">World</string>
 
+    <string name="January">January</string>
+    <string name="February">February</string>
+    <string name="March">March</string>
+    <string name="April">April</string>
+    <string name="May">May</string>
+    <string name="June">June</string>
+    <string name="July">July</string>
+    <string name="August">August</string>
+    <string name="September">September</string>
+    <string name="October">October</string>
+    <string name="November">November</string>
+    <string name="December">December</string>
+
 
     <string-array name="top_section_array">
         <item>@string/all_sections</item>
@@ -49,6 +62,27 @@
         <item>@string/World</item>
     </string-array>
 
+
+    <string-array name="month_array">
+        <item>@string/January</item>
+        <item>@string/February</item>
+        <item>@string/March</item>
+        <item>@string/April</item>
+        <item>@string/May</item>
+        <item>@string/June</item>
+        <item>@string/July</item>
+        <item>@string/August</item>
+        <item>@string/September</item>
+        <item>@string/October</item>
+        <item>@string/November</item>
+        <item>@string/December</item>
+    </string-array>
+
+
+    <string name="selec_date">Select date</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+
     <string name="time_period_text">Time period: </string>
 
     <string name="title_activity_main2">MainActivity2</string>
@@ -58,7 +92,6 @@
     <string name="action_settings">Settings</string>
 
     <string name="search">Search</string>
-
     <string name="favorite">Favorite</string>
     <string name="most_popular">Most popular</string>
     <string name="article_search">Article Search</string>
@@ -69,4 +102,5 @@
     <string name="mostviewed">Most viewed</string>
 
     <string name="no_articles">No articles!</string>
+    <string name="error_request_url">Incorrect request!</string>
 </resources>

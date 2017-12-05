@@ -50,10 +50,12 @@ public class MainActivity extends AppCompatActivity
 
     Toolbar toolbar;
 
-    String typeRequest = "mostpopular/v2/";
-    String section = "mostviewed";
+    String selectedTypeRequest = null;
+
+    String typeRequest = "mostviewed/";
+    String section = "all-sections";
     int timePeriod = 1;
-    int idCheckedNavMenu = 1;
+    int idCheckedNavMenu = 2131361905;
 
     TextView toolbarTitleTextView;
     TextView toolbarSupportTextView;
@@ -73,7 +75,6 @@ public class MainActivity extends AppCompatActivity
                 .contentLayout((LinearLayout) findViewById(R.id.main_content_layout))
                 .supportLayout((LinearLayout) findViewById(R.id.main_support_layout))
                 .build();
-
         layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW);
     }
     private void initNavigationDrawer(){
@@ -98,19 +99,17 @@ public class MainActivity extends AppCompatActivity
         navigationView.getMenu().getItem(1).setChecked(true);
     }
 
-    public void onTopSelectorClickCalled(String value){
-        getDataFromInternet(typeRequest, value, timePeriod);
+    public void onTopSelectorMostPopularCalled(String value){
+        section = value;
+        getMostPopularRequest(typeRequest, value, timePeriod);
     }
 
-    public void getDataFromInternet(String typeRequest, String section, int timePeriod){
+
+    public void getDataFromInternet(NetworkConnection networkConnection, final String typeRequest){
         layoutWorkplaceManager.createView(LayoutWorkplaceManager.CONTENT, LayoutWorkplaceManager.PROGRESS_VIEW);
-        NetworkConnection networkConnection = new NetworkConnection.BuildRequestParam()
-                .typeRequest(typeRequest)
-                .mostPopularParams(NetworkConnection.MOST_MAILED, section, timePeriod)
-                .createUrl();
         networkConnection.createRequest(new TextHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
                 if (responseString != null){
                     Gson gson = new GsonBuilder().create();
                     JsonObject jsonObject = gson.fromJson(responseString, JsonObject.class);
@@ -147,10 +146,24 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                String text = responseString;
-                System.out.println(text);
+                layoutWorkplaceManager.addStringResource(R.string.error_request_url)
+                        .createView(LayoutWorkplaceManager.CONTENT, LayoutWorkplaceManager.ERROR_VIEW);
             }
         });
+    }
+
+    public void getMostPopularRequest(String typeRequest, String section, int timePeriod){
+        NetworkConnection networkConnection = new NetworkConnection.BuildRequestParam()
+                .mostPopularParams(typeRequest, section, timePeriod)
+                .createUrl();
+        getDataFromInternet(networkConnection, NetworkConnection.MOST_POPULAR_REQUEST);
+    }
+
+    public void getArchiveRequests(int year, int month){
+        NetworkConnection networkConnection = new NetworkConnection.BuildRequestParam()
+                .archiveParams(year, month)
+                .createUrl();
+        getDataFromInternet(networkConnection, NetworkConnection.ARCHIVE_REQUEST);
     }
 
     public static Bitmap getBitmapFromURL(String src) {
@@ -194,9 +207,7 @@ public class MainActivity extends AppCompatActivity
                 layoutWorkplaceManager.addArticleArrayList(articleList)
                         .createView(LayoutWorkplaceManager.CONTENT, LayoutWorkplaceManager.ARTICLE_RECYCLER_VIEW);
             }
-        } else {
         }
-
     }
 
     @Override
@@ -211,8 +222,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_time_period, menu);
-        menu.getItem(0).setChecked(true);
+
+        if (menu.size() == 0){
+            getMenuInflater().inflate(R.menu.menu_time_period, menu);
+            menu.getItem(0).setChecked(true);
+            timePeriod = 1;
+        }
+
         return true;
     }
 
@@ -220,22 +236,25 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         String text = null;
-        switch (id){
-            case R.id.time_period_1:
-                timePeriod = 1;
-                text = getResources().getString(R.string.time_period_text) + " " + timePeriod + " day";
-                break;
-            case R.id.time_period_7:
-                timePeriod = 7;
-                text = getResources().getString(R.string.time_period_text) + " " + timePeriod + " days";
-                break;
-            case R.id.time_period_30:
-                timePeriod = 30;
-                text = getResources().getString(R.string.time_period_text) + " " + timePeriod + " days";
-                break;
+        if (Integer.parseInt(item.getTitle().toString()) != timePeriod){
+            timePeriod = Integer.parseInt(item.getTitle().toString());
+            switch (id){
+                case R.id.time_period_1:
+                    timePeriod = 1;
+                    text = getResources().getString(R.string.time_period_text) + " " + timePeriod + " day";
+                    break;
+                case R.id.time_period_7:
+                    timePeriod = 7;
+                    text = getResources().getString(R.string.time_period_text) + " " + timePeriod + " days";
+                    break;
+                case R.id.time_period_30:
+                    timePeriod = 30;
+                    text = getResources().getString(R.string.time_period_text) + " " + timePeriod + " days";
+                    break;
+            }
+            toolbarSupportTextView.setText(text);
+            getMostPopularRequest(typeRequest, section, timePeriod);
         }
-        toolbarSupportTextView.setText(text);
-        getDataFromInternet(typeRequest, section, timePeriod);
         return super.onOptionsItemSelected(item);
     }
 
@@ -246,44 +265,61 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (idCheckedNavMenu != id){
+            idCheckedNavMenu = id;
             switch (id){
                 case R.id.nav_favorite:
                     break;
                 case R.id.nav_mostviewed:
                     toolbarTitleTextView.setText(R.string.mostviewed);
-                    typeRequest = NetworkConnection.MOST_POPULAR_REQUEST;
-                    section = NetworkConnection.MOST_VIEWED;
-                    getDataFromInternet(typeRequest, section , 1);
+                    typeRequest = NetworkConnection.MOST_VIEWED;
+                    if (!layoutWorkplaceManager.selectedSupportView.equals(layoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW)){
+                        layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW);
+                    }
+                    onCreateOptionsMenu(toolbar.getMenu());
+                    getMostPopularRequest(typeRequest, section , 1);
                     break;
                 case R.id.nav_mostmailed:
                     toolbarTitleTextView.setText(R.string.mostemailed);
-                    typeRequest = NetworkConnection.MOST_POPULAR_REQUEST;
-                    section = NetworkConnection.MOST_MAILED;
-                    getDataFromInternet(typeRequest, section , 1);
+                    typeRequest = NetworkConnection.MOST_MAILED;
+                    if (!layoutWorkplaceManager.selectedSupportView.equals(layoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW)){
+                        layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW);
+                    }
+                    getMostPopularRequest(typeRequest, section , 1);
                     break;
                 case R.id.nav_most_shared:
                     toolbarTitleTextView.setText(R.string.mostshared);
-                    typeRequest = NetworkConnection.MOST_POPULAR_REQUEST;
-                    section = NetworkConnection.MOST_SHARED;
-                    getDataFromInternet(typeRequest, section , 1);
+                    typeRequest = NetworkConnection.MOST_SHARED;
+                    if (!layoutWorkplaceManager.selectedSupportView.equals(layoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW)){
+                        layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW);
+                    }
+                    getMostPopularRequest(typeRequest, section , 1);
                     break;
                 case R.id.nav_search:
                     toolbarTitleTextView.setText(R.string.search);
                     typeRequest = NetworkConnection.SEARCH_REQUEST;
-                    layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.SEARCH_ARTICLE_VIEW);
+                    if (!layoutWorkplaceManager.selectedSupportView.equals(layoutWorkplaceManager.SEARCH_ARTICLE_VIEW)){
+                        layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.SEARCH_ARTICLE_VIEW);
+                    }
                     toolbar.getMenu().clear();
+                    getSupportActionBar().setSubtitle("");
                     //getDataFromInternet(typeRequest, section , 1);
                     break;
                 case R.id.nav_archive:
-                    toolbarTitleTextView.setText(R.string.search);
+                    toolbarTitleTextView.setText(R.string.archive);
                     typeRequest = NetworkConnection.ARCHIVE_REQUEST;
-                    layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.ARCHIVE_ARTICLE_VIEW);
-                    toolbar.getMenu().clear();
+                    if (!layoutWorkplaceManager.selectedSupportView.equals(layoutWorkplaceManager.ARCHIVE_ARTICLE_VIEW)){
+                        layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.ARCHIVE_ARTICLE_VIEW);
+                    }
+                    getSupportActionBar().setSubtitle("");
+
+
+
                     break;
             }
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
         }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }

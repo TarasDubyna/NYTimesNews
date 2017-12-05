@@ -72,10 +72,6 @@ public class NetworkConnection extends AsyncHttpClient{
         private int year = 0;
         private int month = 0;
 
-        public BuildRequestParam typeRequest(String value){
-            typeRequest = value;
-            return this;
-        }
         public BuildRequestParam mostPopularParams(String mostPopularType, String section, int timePeriod){
             this.typeRequest = MOST_POPULAR_REQUEST;
             this.mostPopularType = mostPopularType;
@@ -84,6 +80,7 @@ public class NetworkConnection extends AsyncHttpClient{
             return this;
         }
         public BuildRequestParam archiveParams(int year, int month){
+            this.typeRequest = ARCHIVE_REQUEST;
             this.year = year;
             this.month = month;
             return this;
@@ -95,6 +92,7 @@ public class NetworkConnection extends AsyncHttpClient{
                     break;
                 case ARCHIVE_REQUEST:
                     this.request_url = NYTIMES_URL + typeRequest + year + "/" + month + ".json";
+                    System.out.println(this.request_url);
                     break;
                 case SEARCH_REQUEST:
                     this.request_url = NYTIMES_URL + ARCHIVE_REQUEST;
