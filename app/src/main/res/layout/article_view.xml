@@ -16,11 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <ImageView
-                android:src="@drawable/star_icon"
-                android:layout_margin="5dp"
-                android:layout_width="30dp"
-                android:layout_height="30dp" />
             <TextView
                 android:id="@+id/article_title_text"
                 android:gravity="center_horizontal"
@@ -80,7 +75,6 @@
                 <TextView
                     android:id="@+id/article_published_date_text"
                     android:gravity="end"
-                    android:text="byline"
                     android:textColor="@color/black"
                     android:layout_margin="3dp"
                     android:layout_width="80dp"

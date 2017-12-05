@@ -150,8 +150,7 @@ public class LayoutWorkplaceManager {
                     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
-                            Toast.makeText(mContext, "TextSubmit", Toast.LENGTH_SHORT).show();
-
+                            ((MainActivity)mContext).getSearchRequest(query);
                             return false;
                         }
 

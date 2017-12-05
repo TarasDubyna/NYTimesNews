@@ -11,7 +11,9 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
 import com.loopj.android.http.TextHttpResponseHandler;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import cz.msebera.android.httpclient.Header;
 import taras.nytimesnews.Models.Article;
@@ -24,8 +26,6 @@ public class NetworkConnection extends AsyncHttpClient{
 
     public final static String API_KEY = "2586ad6dfc1e4956bf10a11517bd878d";
 
-    public final static String TYPE_REQUEST = "type_request";
-    public final static String MOST_POPULAR_TYPE = "most_popular_type";
 
     public final static String MOST_MAILED = "mostemailed/";
     public final static String MOST_SHARED = "mostshared/";
@@ -35,11 +35,16 @@ public class NetworkConnection extends AsyncHttpClient{
     public final static String SEARCH_REQUEST = "search/v2/";
     public final static String ARCHIVE_REQUEST = "archive/v1/";
 
-    public final static String SECTION = "section";
-    public final static String TIME_PERIOD = "time-period";
+    public final static String PAGE = "page";
+    public final static String NY_BEGIN_DATE = "begin_date";
+    public final static String NY_NEWS_DESK = "fq";
+    public final static String NY_SORT_ORDER = "sort";
+    public final static String QUERY = "q";
+
 
     private String request_url = null;
 
+    private String searchText = null;
 
     private String typeRequest = "mostpopular/v2/";
     private String mostPopularType = MOST_MAILED;
@@ -50,12 +55,19 @@ public class NetworkConnection extends AsyncHttpClient{
     private int month = 0;
 
     private NetworkConnection(BuildRequestParam builder){
+        this.searchText = builder.searchText;
         request_url = builder.request_url;
     }
 
 
-    public RequestHandle createRequest(ResponseHandlerInterface responseHandler) {
-        return super.get(request_url, getRequestApiKey(), responseHandler);
+    public RequestHandle createRequest(ResponseHandlerInterface responseHandler, String typeRequest)
+    {
+        if (typeRequest.equals(MOST_POPULAR_REQUEST)){
+            return super.get(request_url, getRequestParamsMostPopular(), responseHandler);
+        } else {
+            return super.get(request_url, getRequestParamsMostPopular(), responseHandler);
+        }
+
     }
 
     public static class BuildRequestParam{
@@ -72,6 +84,9 @@ public class NetworkConnection extends AsyncHttpClient{
         private int year = 0;
         private int month = 0;
 
+        //search param
+        private String searchText = null;
+
         public BuildRequestParam mostPopularParams(String mostPopularType, String section, int timePeriod){
             this.typeRequest = MOST_POPULAR_REQUEST;
             this.mostPopularType = mostPopularType;
@@ -85,6 +100,12 @@ public class NetworkConnection extends AsyncHttpClient{
             this.month = month;
             return this;
         }
+        public BuildRequestParam searchParams(String searchText){
+            this.typeRequest = SEARCH_REQUEST;
+            this.searchText = searchText;
+            return this;
+        }
+
         public NetworkConnection createUrl(){
             switch (typeRequest){
                 case MOST_POPULAR_REQUEST:
@@ -95,7 +116,7 @@ public class NetworkConnection extends AsyncHttpClient{
                     System.out.println(this.request_url);
                     break;
                 case SEARCH_REQUEST:
-                    this.request_url = NYTIMES_URL + ARCHIVE_REQUEST;
+                    this.request_url = NYTIMES_URL + SEARCH_REQUEST + "articlesearch.json";
                     break;
             }
             return new NetworkConnection(this);
@@ -109,24 +130,20 @@ public class NetworkConnection extends AsyncHttpClient{
     }
 
 
-    private RequestParams getRequestParamsSearch(){
-        RequestParams requestParams = new RequestParams();
-
-        /*
-        requestParams.put("api-key", API_KEY);
-        requestParams.put(NY_BEGIN_DATE, FilterAttributes.beginDate);
-        requestParams.put(NY_NEWS_DESK, newsDeskBuilder.toString());
-        requestParams.put(NY_SORT_ORDER, FilterAttributes.sortOrder.getSortOrder());
-        requestParams.put(PAGE, pageNumber);
-        requestParams.put(QUERY, searchText);*/
-
-
-        return requestParams;
-    }
-
-    private RequestParams getRequestApiKey(){
+    private RequestParams getRequestParamsSearch(String searchText){
         RequestParams requestParams = new RequestParams();
         requestParams.put("api-key", API_KEY);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, - 7);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+
+        requestParams.put(NY_BEGIN_DATE, dateFormat.format(calendar.getTime()));
+        requestParams.put(NY_SORT_ORDER, "newest");
+        requestParams.put(PAGE, 0);
+        requestParams.put(QUERY, searchText);
+
+
         return requestParams;
     }
 }

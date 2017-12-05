@@ -7,11 +7,6 @@
         android:checkableBehavior="single">
 
         <item
-            android:icon="@drawable/star_icon"
-            android:id="@+id/nav_favorite"
-            android:title="@string/favorite" />
-
-        <item
             android:id="@+id/nav_mostviewed"
             android:icon="@drawable/most_viewed"
             android:title="@string/mostviewed" />
@@ -30,12 +25,6 @@
             android:id="@+id/nav_search"
             android:icon="@drawable/search"
             android:title="@string/article_search" />
-
-        <!--
-        <item
-            android:id="@+id/nav_archive"
-            android:icon="@drawable/archive"
-            android:title="@string/archive"/> -->
 
     </group>
 </menu>

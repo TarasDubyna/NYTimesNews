@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity
     String typeRequest = "mostviewed/";
     String section = "all-sections";
     int timePeriod = 1;
-    int idCheckedNavMenu = 2131361905;
+    int idCheckedNavMenu = R.id.nav_mostviewed;
 
     TextView toolbarTitleTextView;
     TextView toolbarSupportTextView;
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.getMenu().getItem(1).setChecked(true);
+        navigationView.getMenu().getItem(0).setChecked(true);
     }
 
     public void onTopSelectorMostPopularCalled(String value){
@@ -113,32 +113,52 @@ public class MainActivity extends AppCompatActivity
                 if (responseString != null){
                     Gson gson = new GsonBuilder().create();
                     JsonObject jsonObject = gson.fromJson(responseString, JsonObject.class);
-                    if (jsonObject.has("results")){
-                        JsonArray jsonResultArray = jsonObject.getAsJsonArray("results");
-                        if (jsonResultArray != null){
-                            ArrayList<Article> articles = new ArrayList<>();
-                            for (int i = 0; i < jsonResultArray.size(); i++){
-                                JsonObject object = (JsonObject) jsonResultArray.get(i);
-                                Article article = new Article();
-                                if (object.get("media").toString().equals("\"\"")){
-                                    article.setUrl(object.get("url").toString());
-                                    article.setTitle(object.get("title").toString());
-                                    article.setAbstracts(object.get("abstract").toString());
-                                    article.setColumn(object.get("column").toString());
-                                    article.setByline(object.get("byline").toString());
-                                    article.setPublished_date(object.get("published_date").toString());
-                                    article.setSection(object.get("section").toString());
-                                    article.setSource(object.get("source").toString());
-                                } else {
-                                    article = gson.fromJson(object, Article.class);
-                                    MediaParam mediaParam = article.getMedia().get(0).getMediaParam().get(article.getMedia().get(0).getMediaParam().size() - 1);
-                                    article.setBitmapImage(getBitmapFromURL(mediaParam.getUrl()));
+                    switch (typeRequest){
+                        case NetworkConnection.MOST_POPULAR_REQUEST:
+                            if (jsonObject.has("results")){
+                                JsonArray jsonResultArray = jsonObject.getAsJsonArray("results");
+                                if (jsonResultArray != null){
+                                    ArrayList<Article> articles = new ArrayList<>();
+                                    for (int i = 0; i < jsonResultArray.size(); i++){
+                                        JsonObject object = (JsonObject) jsonResultArray.get(i);
+                                        Article article = new Article();
+                                        if (object.get("media").toString().equals("\"\"")){
+                                            article.setUrl(object.get("url").toString());
+                                            article.setTitle(object.get("title").toString());
+                                            article.setAbstracts(object.get("abstract").toString());
+                                            article.setColumn(object.get("column").toString());
+                                            article.setByline(object.get("byline").toString());
+                                            article.setPublished_date(object.get("published_date").toString());
+                                            article.setSection(object.get("section").toString());
+                                            article.setSource(object.get("source").toString());
+                                        } else {
+                                            article = gson.fromJson(object, Article.class);
+                                            MediaParam mediaParam = article.getMedia().get(0).getMediaParam().get(article.getMedia().get(0).getMediaParam().size() - 1);
+                                            article.setBitmapImage(getBitmapFromURL(mediaParam.getUrl()));
+                                        }
+                                        articles.add(article);
+                                    }
+                                    createViewByResponse(articles);
                                 }
+                            }
+                            break;
+                        case NetworkConnection.SEARCH_REQUEST:
+                            JsonObject responseJsonObject = jsonObject.getAsJsonObject("response");
+                            JsonArray docsJsonArray = responseJsonObject.getAsJsonArray("docs");
+
+                            ArrayList<Article> articles = new ArrayList<>();
+                            for (int i = 0; i < docsJsonArray.size(); i++){
+                                JsonObject object = (JsonObject) docsJsonArray.get(i);
+                                Article article = new Article();
+                                article.setUrl(object.get("web_url").toString());
+                                article.setAbstracts(object.get("snippet").toString());
+                                article.setPublished_date(object.get("pub_date").toString());
                                 articles.add(article);
                             }
                             createViewByResponse(articles);
-                        }
+                            break;
                     }
+
                 } else {
                     System.out.println("response == null");
                 }
@@ -149,7 +169,14 @@ public class MainActivity extends AppCompatActivity
                 layoutWorkplaceManager.addStringResource(R.string.error_request_url)
                         .createView(LayoutWorkplaceManager.CONTENT, LayoutWorkplaceManager.ERROR_VIEW);
             }
-        });
+        }, typeRequest);
+    }
+
+    public void getSearchRequest(String searchText){
+        NetworkConnection networkConnection = new NetworkConnection.BuildRequestParam()
+                .searchParams(searchText)
+                .createUrl();
+        getDataFromInternet(networkConnection, NetworkConnection.SEARCH_REQUEST);
     }
 
     public void getMostPopularRequest(String typeRequest, String section, int timePeriod){
@@ -222,7 +249,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         if (menu.size() == 0){
             getMenuInflater().inflate(R.menu.menu_time_period, menu);
             menu.getItem(0).setChecked(true);
@@ -263,12 +289,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
+        String text = getResources().getString(R.string.time_period_text) + " " + timePeriod + " day";
         if (idCheckedNavMenu != id){
             idCheckedNavMenu = id;
             switch (id){
-                case R.id.nav_favorite:
-                    break;
+
                 case R.id.nav_mostviewed:
                     toolbarTitleTextView.setText(R.string.mostviewed);
                     typeRequest = NetworkConnection.MOST_VIEWED;
@@ -276,6 +301,7 @@ public class MainActivity extends AppCompatActivity
                         layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW);
                     }
                     onCreateOptionsMenu(toolbar.getMenu());
+                    toolbarSupportTextView.setText(text);
                     getMostPopularRequest(typeRequest, section , 1);
                     break;
                 case R.id.nav_mostmailed:
@@ -284,6 +310,8 @@ public class MainActivity extends AppCompatActivity
                     if (!layoutWorkplaceManager.selectedSupportView.equals(layoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW)){
                         layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW);
                     }
+                    onCreateOptionsMenu(toolbar.getMenu());
+                    toolbarSupportTextView.setText(text);
                     getMostPopularRequest(typeRequest, section , 1);
                     break;
                 case R.id.nav_most_shared:
@@ -292,6 +320,8 @@ public class MainActivity extends AppCompatActivity
                     if (!layoutWorkplaceManager.selectedSupportView.equals(layoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW)){
                         layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.TOP_SELECTOR_RECYCLER_VIEW);
                     }
+                    onCreateOptionsMenu(toolbar.getMenu());
+                    toolbarSupportTextView.setText(text);
                     getMostPopularRequest(typeRequest, section , 1);
                     break;
                 case R.id.nav_search:
@@ -301,20 +331,9 @@ public class MainActivity extends AppCompatActivity
                         layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.SEARCH_ARTICLE_VIEW);
                     }
                     toolbar.getMenu().clear();
-                    getSupportActionBar().setSubtitle("");
-                    //getDataFromInternet(typeRequest, section , 1);
+                    toolbarSupportTextView.setText("");
                     break;
-                case R.id.nav_archive:
-                    toolbarTitleTextView.setText(R.string.archive);
-                    typeRequest = NetworkConnection.ARCHIVE_REQUEST;
-                    if (!layoutWorkplaceManager.selectedSupportView.equals(layoutWorkplaceManager.ARCHIVE_ARTICLE_VIEW)){
-                        layoutWorkplaceManager.createView(LayoutWorkplaceManager.SUPPORT, LayoutWorkplaceManager.ARCHIVE_ARTICLE_VIEW);
-                    }
-                    getSupportActionBar().setSubtitle("");
 
-
-
-                    break;
             }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

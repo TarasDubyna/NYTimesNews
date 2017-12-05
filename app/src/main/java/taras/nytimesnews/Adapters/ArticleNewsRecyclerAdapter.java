@@ -1,6 +1,8 @@
 package taras.nytimesnews.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +12,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import taras.nytimesnews.Models.Article;
@@ -59,7 +64,7 @@ public class ArticleNewsRecyclerAdapter extends RecyclerView.Adapter<ArticleNews
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         if (position == 0){
@@ -76,12 +81,16 @@ public class ArticleNewsRecyclerAdapter extends RecyclerView.Adapter<ArticleNews
         createImageCaptionView(holder, articles.get(position));
 
         holder.mByLineText.setText(articles.get(position).getByline());
-        holder.mPublishedDateText.setText(articles.get(position).getPublished_date());
+
+        if (articles.get(position).getTitle() != null){
+            holder.mPublishedDateText.setText(articles.get(position).getPublished_date());
+        }
 
         holder.mBtnMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent browse = new Intent(Intent.ACTION_VIEW, Uri.parse(articles.get(position).getUrl()));
+                mContext.startActivity(browse);
             }
         });
     }
